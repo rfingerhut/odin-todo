@@ -1,11 +1,9 @@
-function createProject (title){
-    const id = Math.random().toString(16).slice(2);
-
-    return {
-        title,
-        todos: [],
-        id,
+class Project{
+    constructor(title){
+        this.title = title,
+        this.todos = [];
+        this.id = crypto.randomUUID();
     }
 }
 
-export default createProject;
+export default Project;
