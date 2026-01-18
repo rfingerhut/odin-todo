@@ -7,6 +7,26 @@ class Todo{
         this.completed = false;
         this.id = crypto.randomUUID();
     }
+
+    setTitle(newTitle){
+        this.title = newTitle;
+    }
+
+    setDescription(newDescription){
+        this.description = newDescription;
+    }
+
+    setPriority(newPriority){
+        this.priority = newPriority;
+    }
+
+    setDueDate(newDate){
+        this.dueDate = newDate;
+    }
+
+    markComplete(){
+        this.completed = true;
+    }
 }
 
 export default Todo;
