@@ -1,13 +1,12 @@
-function createTodo (title, description, priority, dueDate){
-    const id = Math.random().toString(16).slice(2);
-
-    return{
-        title,
-        description,
-        priority,
-        dueDate,
-        id,
+class Todo{
+    constructor(title, description, priority, dueDate){
+        this.title = title;
+        this.description = description;
+        this.priority = priority;
+        this.dueDate = dueDate;
+        this.completed = false;
+        this.id = crypto.randomUUID();
     }
 }
 
-export default createTodo;
+export default Todo;
