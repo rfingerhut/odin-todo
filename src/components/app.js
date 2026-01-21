@@ -95,29 +95,54 @@ function createApp() {
       localStorage.setItem("projects", projectsJSON);
    }
 
-   function loadProjects(){
-      if (localStorage.getItem("projects") === null){
-         return;
-      }
-      
-      const projectsParsed = JSON.parse(localStorage.getItem("projects"));
+   function loadProjects() {
+      const saved = localStorage.getItem("projects");
+      if (!saved) return;
 
-      projects = projectsParsed;
-      return projects;
+      const parsed = JSON.parse(saved);
+
+      projects = parsed.map((projectData) => {
+         const project = new Project(projectData.title);
+         project.id = projectData.id;
+
+         projectData.todos.forEach((todoData) => {
+            const todo = new Todo(
+               todoData.title,
+               todoData.desc,
+               todoData.pri,
+               todoData.date
+            );
+            todo.id = todoData.id;
+            todo.completed = todoData.completed;
+
+            project.addTodoToList(todo);
+         });
+
+         return project;
+      });
+
+      activeProject = projects[0] || null;
    }
+
+
+   
+
+
 
 
    return {
       addProject,
+      setActiveProject,
       getActiveProject,
-      addTodo,
-      getAllProjects,
       deleteActiveProject,
       deleteProjectByID,
-      showAllTodosOfActiveProject,
-      setActiveProject,
+      getAllProjects,
+
+      addTodo,
       deleteTodo,
       markTodoComplete,
+      showAllTodosOfActiveProject,
+      
       saveProjects,
       loadProjects,
    };
