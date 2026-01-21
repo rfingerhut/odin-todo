@@ -1,12 +1,8 @@
+function ui() {
+  
 
-function createUI(app){
-   function render(){
-   
-   }
-
-   return{
-    render,
-   }
+  return {
+  };
 }
 
-export default createUI;
+export default ui();
