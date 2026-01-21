@@ -1,6 +1,6 @@
 class Project{
     constructor(title){
-        this.title = title,
+        this.title = title || 'untitled',
         this.todos = [];
         this.id = crypto.randomUUID();
     }
