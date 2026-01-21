@@ -2,13 +2,15 @@ import Project from "./project";
 import Todo from "./todo";
 
 function createApp() {
-   const projects = [];
+   let projects = [];
    let activeProject = null;
+   loadProjects();
 
    function addProject(title){
       const project = new Project(title);
       projects.push(project);
       activeProject = project;
+      saveProjects();
       return project;
    }
 
@@ -31,6 +33,7 @@ function createApp() {
 
       const todo = new Todo(title, desc, pri, date);
       project.addTodoToList(todo);
+      saveProjects();
       return true;
    }
 
@@ -87,6 +90,22 @@ function createApp() {
       return true;
    }
 
+   function saveProjects(){
+      const projectsJSON = JSON.stringify(projects);
+      localStorage.setItem("projects", projectsJSON);
+   }
+
+   function loadProjects(){
+      if (localStorage.getItem("projects") === null){
+         return;
+      }
+      
+      const projectsParsed = JSON.parse(localStorage.getItem("projects"));
+
+      projects = projectsParsed;
+      return projects;
+   }
+
 
    return {
       addProject,
@@ -99,6 +118,8 @@ function createApp() {
       setActiveProject,
       deleteTodo,
       markTodoComplete,
+      saveProjects,
+      loadProjects,
    };
 }
 
