@@ -1,0 +1,11 @@
+.todo{
+    border: 1px solid red;
+}
+
+li{
+    /* color: red; */
+}
+
+.project{
+    border: 1px solid blue;
+}
