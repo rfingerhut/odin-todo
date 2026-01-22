@@ -1,8 +1,8 @@
-function ui() {
+function createUI() {
   
 
   return {
   };
 }
 
-export default ui();
+export default createUI();

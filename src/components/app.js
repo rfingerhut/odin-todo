@@ -1,17 +1,19 @@
-import Project from "./project";
-import Todo from "./todo";
+import createProject from "./project";
+import createTodo from "./todo";
 
 function createApp() {
    let projects = [];
    let activeProject = null;
+
    loadProjects();
 
    function addProject(title){
-      const project = new Project(title);
-      projects.push(project);
-      activeProject = project;
+      const newProject = createProject(title);
+
+      projects.push(newProject);
+      activeProject = newProject;
       saveProjects();
-      return project;
+      return newProject;
    }
 
    function getActiveProject(){
@@ -31,8 +33,9 @@ function createApp() {
       const project = getActiveProject();
       if (!project) return false;
 
-      const todo = new Todo(title, desc, pri, date);
-      project.addTodoToList(todo);
+      const todo = createTodo(title, desc, pri, date);
+
+      project.todos.push(todo);
       saveProjects();
       return true;
    }
@@ -66,7 +69,7 @@ function createApp() {
 
    function showAllTodosOfActiveProject(){
       const project = getActiveProject();
-      return project.getAllTodos();
+      return project ? project.todos : [];
    }
 
    function deleteTodo(id){
@@ -75,7 +78,12 @@ function createApp() {
          return false;
       }
 
-      return project.removeTodoByID(id);      
+      const index = project.todos.findIndex(el => el.id === id);
+      if (index === -1) return false;
+
+      project.todos.splice(index, 1);
+      saveProjects();
+      return true;   
    }
 
    function markTodoComplete(id){
@@ -86,7 +94,8 @@ function createApp() {
          return false;
       }
 
-      todo.markComplete();
+      todo.completed = true;
+      saveProjects();
       return true;
    }
 
@@ -97,39 +106,11 @@ function createApp() {
 
    function loadProjects() {
       const saved = localStorage.getItem("projects");
-      if (!saved) return;
+      if(!saved) return;
 
-      const parsed = JSON.parse(saved);
-
-      projects = parsed.map((projectData) => {
-         const project = new Project(projectData.title);
-         project.id = projectData.id;
-
-         projectData.todos.forEach((todoData) => {
-            const todo = new Todo(
-               todoData.title,
-               todoData.desc,
-               todoData.pri,
-               todoData.date
-            );
-            todo.id = todoData.id;
-            todo.completed = todoData.completed;
-
-            project.addTodoToList(todo);
-         });
-
-         return project;
-      });
-
+      projects = JSON.parse(saved);
       activeProject = projects[0] || null;
    }
-
-   
-
-   
-
-
-
 
    return {
       addProject,

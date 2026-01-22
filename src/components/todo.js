@@ -1,32 +1,44 @@
-class Todo{
-    constructor(title, description, priority, dueDate){
-        this.title = title;
-        this.description = description;
-        this.priority = priority;
-        this.dueDate = dueDate;
-        this.completed = false;
-        this.id = crypto.randomUUID();
-    }
 
-    setTitle(newTitle){
-        this.title = newTitle;
-    }
+//     constructor(title, description, priority, dueDate){
+//         this.title = title;
+//         this.description = description;
+//         this.priority = priority;
+//         this.dueDate = dueDate;
+//         this.completed = false;
+//         this.id = crypto.randomUUID();
+//     }
 
-    setDescription(newDescription){
-        this.description = newDescription;
-    }
+//     setTitle(newTitle){
+//         this.title = newTitle;
+//     }
 
-    setPriority(newPriority){
-        this.priority = newPriority;
-    }
+//     setDescription(newDescription){
+//         this.description = newDescription;
+//     }
 
-    setDueDate(newDate){
-        this.dueDate = newDate;
-    }
+//     setPriority(newPriority){
+//         this.priority = newPriority;
+//     }
 
-    markComplete(){
-        this.completed = true;
+//     setDueDate(newDate){
+//         this.dueDate = newDate;
+//     }
+
+//     markComplete(){
+//         this.completed = true;
+//     }
+// }
+
+// export default Todo;
+function createTodo(title, desc, pri, date){
+    return{
+        title,
+        desc,
+        pri,
+        date,
+        id: crypto.randomUUID(),
+        completed: false,
     }
 }
 
-export default Todo;
+export default createTodo;
