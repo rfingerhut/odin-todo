@@ -1,4 +1,5 @@
-import renderTodos from './renderTodos';
+// import renderTodos from './renderTodos';
+import { parse, format} from "date-fns";
 
 function createUI(app) {
   const content = document.getElementById('content');
@@ -40,6 +41,7 @@ function createUI(app) {
     input.placeholder = "Project Name";
     input.type = 'text';
     input.name = 'projectTitle';
+    input.required = true;
     const button = document.createElement('button');
     button.type = 'submit';
     button.textContent = 'submit';
@@ -58,6 +60,102 @@ function createUI(app) {
       render();
     })
   }
+
+  function renderTodos(app){
+      const activeProject = app.getActiveProject();
+      if(!activeProject) return;
+  
+      const todos = app.showAllTodosOfActiveProject();
+      const section = document.createElement('section');
+  
+      const form = document.createElement('form');
+  
+      const inputTitle = document.createElement('input');
+      inputTitle.placeholder = "Todo";
+      inputTitle.type = 'text';
+      inputTitle.name = 'todoTitle';
+      inputTitle.required = true;
+  
+      const inputDesc = document.createElement('textarea');
+      inputDesc.placeholder = "Description";
+      inputDesc.name = 'todoDesc';
+  
+      const select = document.createElement('select');
+      select.name = 'todoPri';
+      select.required = true;
+      const inputPriority = document.createElement('optgroup');
+      inputPriority.label = 'Priority Level';
+  
+      const priLow = document.createElement('option');
+      const priMed = document.createElement('option');
+      const priHigh = document.createElement('option');
+  
+      priLow.textContent = 'Low';
+      priLow.value=1;
+      priMed.textContent = 'Medium';
+      priMed.value = 2;
+      priHigh.textContent = 'High';
+      priHigh.value = 3;
+      
+      
+      inputPriority.append(priLow, priMed, priHigh);
+      select.append(inputPriority);
+     
+  
+      const inputDate = document.createElement('input');
+      inputDate.type = 'date';
+      inputDate.name = 'todoDate';
+  
+      const labelTitle = document.createElement('label');
+      labelTitle.for = 'todoTitle';
+      const labelDesc = document.createElement('label');
+      labelDesc.for = 'todoDesc';
+      const labelPri = document.createElement('label');
+      labelPri.for = 'todoPri';
+      const labelDate = document.createElement('label');
+      labelDate.for = 'todoDate';
+  
+      const button = document.createElement('button');
+      button.type = 'submit';
+      button.textContent = 'submit';
+      form.append(inputTitle, labelTitle, inputDesc, labelDesc, select, inputDate, labelDate, button);
+      section.appendChild(form);
+  
+      const list = document.createElement('ul');
+      todos.forEach(todo => {
+        const li = document.createElement('li');
+        const card = document.createElement('div');
+        const title = document.createElement('p');
+        const desc = document.createElement('p');
+        const pri = document.createElement('p');
+        const date = document.createElement('p');
+        title.textContent = todo.title;
+        desc.textContent = todo.desc;
+        pri.textContent = todo.pri;
+        date.textContent = todo.date;
+        card.id = todo.id;
+        card.append(title, desc, pri, date);
+        li.append(card);
+        list.appendChild(li);
+      })
+  
+      form.addEventListener('submit', (e) => {
+          e.preventDefault();
+
+          const formattedDate = format(inputDate.value, 'MM/dd/yyyy');
+
+          app.addTodo(inputTitle.value, inputDesc.value, select.value, formattedDate);
+          
+          inputTitle.textContent = '';
+          inputDesc.textContent = '';
+          inputPriority.textContent = '';
+          inputDate.textContent = '';
+          render();
+        });
+  
+      section.appendChild(list);
+      content.appendChild(section);
+    }
 
   function clear(){
     content.textContent = '';
