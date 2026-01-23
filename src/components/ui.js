@@ -1,3 +1,5 @@
+import renderTodos from './renderTodos';
+
 function createUI(app) {
   const content = document.getElementById('content');
 
@@ -9,7 +11,7 @@ function createUI(app) {
   function render(){
     clear();
     renderProjects();
-    renderTodos();
+    renderTodos(app);
   }
 
   function renderProjects(){
@@ -56,25 +58,6 @@ function createUI(app) {
       render();
     })
   }
-
-
-  function renderTodos(){
-    const activeProject = app.getActiveProject();
-    if(!activeProject) return;
-
-    const todos = app.showAllTodosOfActiveProject();
-    const section = document.createElement('section');
-    const list = document.createElement('ul');
-    todos.forEach(todo => {
-      const li = document.createElement('li');
-      li.textContent = todo.title;
-      li.id = todo.id;
-      list.appendChild(li);
-    })
-    section.append(list);
-    content.appendChild(section);
-  }
-
 
   function clear(){
     content.textContent = '';
