@@ -137,6 +137,9 @@ function createUI(app) {
   
       const list = document.createElement('ul');
       todos.forEach(todo => {
+        const button = document.createElement('button');
+        button.textContent = '';
+        button.classList.add('completeTodoButton');
         const li = document.createElement('li');
         const card = document.createElement('div');
         const title = document.createElement('p');
@@ -148,7 +151,7 @@ function createUI(app) {
         pri.textContent = todo.pri;
         date.textContent = todo.date;
         card.id = todo.id;
-        card.append(title, desc, pri, date);
+        card.append(title, desc, pri, date, button);
         li.append(card);
         list.appendChild(li);
       })
@@ -169,6 +172,12 @@ function createUI(app) {
   
       section.appendChild(list);
       content.appendChild(section);
+
+      document.querySelectorAll('.completeTodoButton').forEach(button => button.addEventListener('click', () => {
+        app.deleteTodo(button.parentElement.id);
+        render();
+      }
+      ));
     }
 
   function clear(){
