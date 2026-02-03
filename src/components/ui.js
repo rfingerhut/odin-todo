@@ -1,5 +1,4 @@
-// import renderTodos from './renderTodos';
-import { parse, format} from "date-fns";
+import { format} from "date-fns";
 
 function createUI(app) {
   const content = document.getElementById('content');
@@ -20,17 +19,22 @@ function createUI(app) {
 
     const section = document.createElement('section');
     const ul = document.createElement('ul');
+    
 
     projects.forEach(project => {
+      const button = document.createElement('button');
+      button.textContent = 'X';
+      button.classList.add('deleteProjectButton');
       const li = document.createElement('li');
       li.textContent = project.title;
       li.id = project.id;
       li.classList.add('project');
+      li.appendChild(button);
       li.addEventListener('click', ()=>{
         app.setActiveProject(project);
         render();
       })
-      ul.appendChild(li);
+      ul.append(li);
     });
     section.appendChild(ul);
 
@@ -59,6 +63,16 @@ function createUI(app) {
       input.value = '';
       render();
     })
+
+    const deleteProjButton = document.querySelectorAll('.deleteProjectButton');
+    deleteProjButton.forEach(button => {
+      button.addEventListener('click', () => {
+        const parent = button.parentElement;
+        app.deleteProjectByID(parent.id);
+        render();
+      })
+    })
+
   }
 
   function renderTodos(app){
