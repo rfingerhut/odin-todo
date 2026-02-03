@@ -53,6 +53,7 @@ function createApp() {
 
       projects.splice(index, 1);
       activeProject = null;
+      saveProjects();
       return true; 
    }
 
@@ -63,7 +64,11 @@ function createApp() {
          return false;
       }
 
+      if(projectID === activeProject.id){
+         activeProject = null;
+      }
       projects.splice(index, 1);
+      saveProjects();
       return true;
    }
 
