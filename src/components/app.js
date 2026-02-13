@@ -67,6 +67,7 @@ function createApp() {
       if(projectID === activeProject.id){
          activeProject = null;
       }
+      projects[index].todos = [];
       projects.splice(index, 1);
       saveProjects();
       return true;
