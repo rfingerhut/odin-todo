@@ -56,7 +56,7 @@ function createUI(app) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
       if (!input.value){
-        return;
+        alert('Please enter a project name.');
       }
 
       app.addProject(input.value);
@@ -119,6 +119,7 @@ function createUI(app) {
       const inputDate = document.createElement('input');
       inputDate.type = 'date';
       inputDate.name = 'todoDate';
+      inputDate.required = true;
   
       const labelTitle = document.createElement('label');
       labelTitle.for = 'todoTitle';
