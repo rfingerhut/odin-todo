@@ -1,4 +1,4 @@
-import { format} from "date-fns";
+import { format, isBefore } from "date-fns";
 
 function createUI(app) {
   const content = document.getElementById('content');
@@ -159,8 +159,16 @@ function createUI(app) {
   
       form.addEventListener('submit', (e) => {
           e.preventDefault();
+          const today = new Date();
+          const [year, month, day] = inputDate.value.split('-');
+          const input = new Date(year, month - 1, day);
 
-          const formattedDate = format(inputDate.value, 'MM/dd/yyyy');
+          if(isBefore(input, today)){
+            alert('Date must be in the future!');
+            return;
+          }
+
+          const formattedDate = format(input, 'MM/dd/yyyy');
 
           app.addTodo(inputTitle.value, inputDesc.value, select.value, formattedDate);
           
