@@ -4,6 +4,7 @@ import createTodo from "./todo";
 function createApp() {
    let projects = [];
    let activeProject = null;
+   let activeTodo = null;
 
    loadProjects();
 
@@ -110,6 +111,17 @@ function createApp() {
       return true;
    }
 
+   function setActiveTodo(id){
+      const project = getActiveProject();
+      const todo = project.todos.find((el) => el.id === id)
+      activeTodo = todo;
+      saveProjects();
+   }
+
+   function getActiveTodo(){
+      return activeTodo;
+   }
+
    function saveProjects(){
       const projectsJSON = JSON.stringify(projects);
       localStorage.setItem("projects", projectsJSON);
@@ -121,6 +133,7 @@ function createApp() {
 
       projects = JSON.parse(saved);
       activeProject = projects[0] || null;
+      activeTodo = null;
    }
 
    return {
@@ -135,6 +148,8 @@ function createApp() {
       addTodo,
       deleteTodo,
       markTodoComplete,
+      setActiveTodo,
+      getActiveTodo,
       showAllTodosOfActiveProject,
       
       saveProjects,
