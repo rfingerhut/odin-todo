@@ -19,25 +19,6 @@ function createUI(app) {
 
     const section = document.createElement('section');
     const ul = document.createElement('ul');
-    
-
-    projects.forEach(project => {
-      const button = document.createElement('button');
-      button.textContent = 'X';
-      button.classList.add('deleteProjectButton');
-      const li = document.createElement('li');
-      li.textContent = project.title;
-      li.id = project.id;
-      li.classList.add('project');
-      li.appendChild(button);
-      li.addEventListener('click', ()=>{
-        app.setActiveProject(project);
-        render();
-      })
-      ul.append(li);
-    });
-    section.appendChild(ul);
-
     const form = document.createElement('form');
     const input = document.createElement('input');
     const label = document.createElement('label');
@@ -52,6 +33,53 @@ function createUI(app) {
 
     form.append(input, label, button);
     content.append(form, section);
+
+    projects.forEach(project => {
+      const button = document.createElement('button');
+      button.textContent = 'X';
+      button.classList.add('deleteProjectButton');
+
+      const li = document.createElement('li');
+      li.id = project.id;
+      li.classList.add('project');
+
+      const projectTitle = document.createElement('span');
+      projectTitle.textContent = project.title;
+
+      projectTitle.addEventListener('click', (el) => {
+        el.stopPropagation();
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = project.title;
+
+        li.replaceChild(input, projectTitle);
+        input.focus();
+
+        input.addEventListener('blur', () => {
+          if(input.value.trim() !== ''){
+            app.updateProjectTitle(project.id, input.value);
+          }
+          render();
+        })
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter'){
+            input.blur();
+          }
+        })
+      });
+
+      li.appendChild(projectTitle, button);
+
+      li.addEventListener('click', ()=>{
+        app.setActiveProject(project);
+        render();
+      })
+
+      ul.append(li);
+    });
+    section.appendChild(ul);
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
