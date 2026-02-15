@@ -16,6 +16,11 @@ function createApp() {
       return newProject;
    }
 
+   function updateProjectTitle(id, newTitle){
+      getProjectById(id).title = newTitle;
+      saveProjects();
+   }
+
    function getActiveProject(){
       return activeProject;
    }
@@ -120,6 +125,7 @@ function createApp() {
 
    return {
       addProject,
+      updateProjectTitle,
       setActiveProject,
       getActiveProject,
       deleteActiveProject,
