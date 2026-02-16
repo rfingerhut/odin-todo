@@ -122,30 +122,37 @@ function createApp() {
       return activeTodo;
    }
 
-   function updateTodoTitle(newTitle){
-      if(activeTodo === null) return;
-      activeTodo.title = newTitle;
+   function getTodoByID(id){
+      const project = getActiveProject();
+      const todo = project.todos.find((el => el.id === id));
+      if(todo === null) console.log('no todo found');
+      return todo;
+   }
+
+   function updateTodoTitle(id, newTitle){
+      const todo = getTodoByID(id);
+      todo.title = newTitle;
       saveProjects();
    }
 
-   function updateTodoDesc(newDesc){
-      if(activeTodo === null) return;
-      activeTodo.desc = newDesc;
+   function updateTodoDesc(id, newDesc){
+      const todo = getTodoByID(id);
+      todo.desc = newDesc;
       saveProjects();
    }
 
-   function updateTodoPriLevel(newPri){
-      if(activeTodo === null) return;
-      activeTodo.pri = newPri;
+   function updateTodoPriLevel(id, newPri){
+      const todo = getTodoByID(id);
+      todo.pri = newPri;
       saveProjects();
    }
 
-   function updateTodoDueDate(newDate){
-      if(activeTodo === null) return;
-      activeTodo.date = newDate;
+   function updateTodoDueDate(id, newDate){
+      const todo = getTodoByID(id);
+      todo.date = newDate;
       saveProjects();
    }
-   
+
    function saveProjects(){
       const projectsJSON = JSON.stringify(projects);
       localStorage.setItem("projects", projectsJSON);

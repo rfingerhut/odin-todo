@@ -10,7 +10,7 @@ function createUI(app) {
   function render(){
     clear();
     renderProjects();
-    renderTodos(app);
+    renderTodos();
   }
 
   function renderProjects(){
@@ -72,7 +72,6 @@ function createUI(app) {
       li.appendChild(projectTitle, button);
 
       li.addEventListener('click', ()=>{
-        clearTodoEditContainer();
         app.setActiveProject(project);
         render();
       })
@@ -94,7 +93,8 @@ function createUI(app) {
 
     const deleteProjButton = document.querySelectorAll('.deleteProjectButton');
     deleteProjButton.forEach(button => {
-      button.addEventListener('click', () => {
+      button.addEventListener('click', (e) => {
+        e.stopPropagation();
         const parent = button.parentElement;
         app.deleteProjectByID(parent.id);
         render();
@@ -103,7 +103,7 @@ function createUI(app) {
 
   }
 
-  function renderTodos(app){
+  function renderTodos(){
     const activeProject = app.getActiveProject();
     if(!activeProject) return;
 
@@ -149,6 +149,11 @@ function createUI(app) {
       const button = document.createElement('button');
       button.textContent = '';
       button.classList.add('completeTodoButton');
+      button.addEventListener('click', () => {
+        app.deleteTodo(button.parentElement.id);
+        render();
+        }
+      )
       const li = document.createElement('li');
       const card = document.createElement('div');
       const title = document.createElement('p');
@@ -185,9 +190,9 @@ function createUI(app) {
 
         app.addTodo(inputTitle.value, inputDesc.value, select.value, formattedDate);
         
-        inputTitle.textContent = '';
-        inputDesc.textContent = '';
-        inputDate.textContent = '';
+        inputTitle.value = '';
+        inputDesc.value = '';
+        inputDate.value = '';
         render();
       });
 
@@ -201,18 +206,7 @@ function createUI(app) {
     ));
   }
 
-  const container = document.createElement('div');
-
-  // is it clearing? or is it just not rendering??
-  function clearTodoEditContainer(){
-    while(container.hasChildNodes()){
-      container.firstChild.remove();
-    }
-  }
-
   function renderTodoEdit(){
-    clearTodoEditContainer();
-
     const activeProject = app.getActiveProject();
     if(!activeProject) return;
     const activeTodo = app.getActiveTodo();
@@ -253,12 +247,11 @@ function createUI(app) {
     content.appendChild(overlay);
 
     sidebar.addEventListener('click', (e) => {
-      e.stopImmediatePropagation();
+      e.stopPropagation();
     })
 
     overlay.addEventListener('click', () => {
       overlay.remove();
-      render();
     })
 
     todoTitle.addEventListener('click', () => {
@@ -270,8 +263,10 @@ function createUI(app) {
 
       titleInput.addEventListener('blur', () => {
         if(titleInput.value.trim() !== ''){
-            app.updateTodoTitle(titleInput.value);
+            app.updateTodoTitle(activeTodo.id, titleInput.value);
             todoTitle.textContent = activeTodo.title;
+
+            updateTodoCard(activeTodo.id);
           }
         sidebar.replaceChild(todoTitle, titleInput);
       })
@@ -292,10 +287,11 @@ function createUI(app) {
 
       descInput.addEventListener('blur', () => {
         if(descInput.value.trim() !== ''){
-            app.updateTodoDesc(descInput.value);
+            app.updateTodoDesc(activeTodo.id, descInput.value);
             todoDescription.textContent = activeTodo.desc;
           }
         todoDescriptionContainer.replaceChild(todoDescription, descInput);
+        updateTodoCard(activeTodo.id);
       })
 
       descInput.addEventListener('keydown', (e) => {
@@ -311,9 +307,10 @@ function createUI(app) {
       select.focus();
 
       select.addEventListener('blur', () => {
-        app.updateTodoPriLevel(select.value);
+        app.updateTodoPriLevel(activeTodo.id, select.value);
         todoPriorityLevel.textContent = activeTodo.pri;
         todoPriorityLevelContainer.replaceChild(todoPriorityLevel, select);
+        updateTodoCard(activeTodo.id);
       })
 
       select.addEventListener('keydown', (e) => {
@@ -341,9 +338,10 @@ function createUI(app) {
         }
 
         const formattedDate = format(input, 'MM/dd/yyyy');
-        app.updateTodoDueDate(formattedDate);
+        app.updateTodoDueDate(activeTodo.id, formattedDate);
         todoDueDate.textContent = activeTodo.date;
         todoDueDateContainer.replaceChild(todoDueDate, inputDate);
+        updateTodoCard(activeTodo.id);
       })
     })
   }
@@ -369,6 +367,19 @@ function createUI(app) {
       inputPriority.append(priLow, priMed, priHigh);
       select.append(inputPriority);
       return select;
+  }
+
+  function updateTodoCard(id){
+    const card = document.getElementById(id);
+    if (!card) return;
+    
+    const updatedTodo = app.getActiveTodo();
+
+    const [titleEl, descEl, priEl, dateEl] = card.children;
+    titleEl.textContent = updatedTodo.title;
+    descEl.textContent = updatedTodo.desc;
+    priEl.textContent = updatedTodo.pri;
+    dateEl.textContent = updatedTodo.date;
   }
 
   function clear(){
