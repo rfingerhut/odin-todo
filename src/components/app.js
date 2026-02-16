@@ -122,6 +122,12 @@ function createApp() {
       return activeTodo;
    }
 
+   function updateTodoTitle(newTitle){
+      if(activeTodo === null) return;
+      activeTodo.title = newTitle;
+      saveProjects();
+   }
+
    function saveProjects(){
       const projectsJSON = JSON.stringify(projects);
       localStorage.setItem("projects", projectsJSON);
@@ -150,6 +156,7 @@ function createApp() {
       markTodoComplete,
       setActiveTodo,
       getActiveTodo,
+      updateTodoTitle,
       showAllTodosOfActiveProject,
       
       saveProjects,

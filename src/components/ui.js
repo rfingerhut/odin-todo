@@ -240,7 +240,7 @@ function createUI(app) {
     const activeTodo = app.getActiveTodo();
     if(!activeTodo) return;
 
-    const todoTitle = document.createElement('h1');
+    const todoTitle = document.createElement('span');
     todoTitle.textContent = activeTodo.title;
 
     const todoDescription = document.createElement('p');
@@ -256,6 +256,27 @@ function createUI(app) {
 
     container.append(todoTitle, todoDescription, priorityLevelContainer, todoDueDate);
     content.append(container);
+
+    todoTitle.addEventListener('click', () => {
+      const titleInput = document.createElement('input');
+      titleInput.type = 'text';
+      titleInput.value = activeTodo.title;
+      container.replaceChild(titleInput, todoTitle);
+      titleInput.focus();
+
+      titleInput.addEventListener('blur', () => {
+        if(titleInput.value.trim() !== ''){
+            app.updateTodoTitle(titleInput.value);
+          }
+          render();
+      })
+
+      titleInput.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter'){
+          titleInput.blur();
+        }
+      })
+    })
   }
 
   function clear(){
