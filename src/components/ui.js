@@ -5,14 +5,12 @@ function createUI(app) {
 
   function init(){
     render();
-
   }
 
   function render(){
     clear();
     renderProjects();
     renderTodos(app);
-    renderTodoEdit();
   }
 
   function renderProjects(){
@@ -74,6 +72,7 @@ function createUI(app) {
       li.appendChild(projectTitle, button);
 
       li.addEventListener('click', ()=>{
+        clearTodoEditContainer();
         app.setActiveProject(project);
         render();
       })
@@ -223,20 +222,40 @@ function createUI(app) {
     ));
   }
 
+  const container = document.createElement('div');
+
+
+  // is it clearing? or is it just not rendering??
+  function clearTodoEditContainer(){
+    while(container.hasChildNodes()){
+      container.firstChild.remove();
+    }
+  }
+
   function renderTodoEdit(){
+    clearTodoEditContainer();
+
     const activeProject = app.getActiveProject();
     if(!activeProject) return;
     const activeTodo = app.getActiveTodo();
-    console.log(JSON.stringify(activeTodo));
-    
-    const container = document.createElement('div');
+    if(!activeTodo) return;
+
     const todoTitle = document.createElement('h1');
+    todoTitle.textContent = activeTodo.title;
+
     const todoDescription = document.createElement('p');
+    todoDescription.textContent = activeTodo.desc;
+
     const priorityLevelContainer = document.createElement('div');
     const todoPriorityLevel = document.createElement('p');
+    todoPriorityLevel.textContent = activeTodo.pri;
     priorityLevelContainer.appendChild(todoPriorityLevel);
+
     const todoDueDate = document.createElement('p');
+    todoDueDate.textContent = activeTodo.date;
+
     container.append(todoTitle, todoDescription, priorityLevelContainer, todoDueDate);
+    content.append(container);
   }
 
   function clear(){
