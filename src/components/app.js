@@ -128,6 +128,24 @@ function createApp() {
       saveProjects();
    }
 
+   function updateTodoDesc(newDesc){
+      if(activeTodo === null) return;
+      activeTodo.desc = newDesc;
+      saveProjects();
+   }
+
+   function updateTodoPriLevel(newPri){
+      if(activeTodo === null) return;
+      activeTodo.pri = newPri;
+      saveProjects();
+   }
+
+   function updateTodoDueDate(newDate){
+      if(activeTodo === null) return;
+      activeTodo.date = newDate;
+      saveProjects();
+   }
+   
    function saveProjects(){
       const projectsJSON = JSON.stringify(projects);
       localStorage.setItem("projects", projectsJSON);
@@ -157,6 +175,9 @@ function createApp() {
       setActiveTodo,
       getActiveTodo,
       updateTodoTitle,
+      updateTodoDesc,
+      updateTodoPriLevel,
+      updateTodoDueDate,
       showAllTodosOfActiveProject,
       
       saveProjects,

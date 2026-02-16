@@ -9,3 +9,16 @@ li{
 .project{
     border: 1px solid blue;
 }
+
+.overlay{
+    border: 1px solid red;
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: flex-end;
+    z-index: 1000;
+}
+
+.sidebar{
+    border: 1px solid black;
+}

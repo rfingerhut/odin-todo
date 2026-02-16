@@ -122,28 +122,8 @@ function createUI(app) {
     inputDesc.placeholder = "Description";
     inputDesc.name = 'todoDesc';
 
-    const select = document.createElement('select');
-    select.name = 'todoPri';
-    select.required = true;
-    const inputPriority = document.createElement('optgroup');
-    inputPriority.label = 'Priority Level';
-
-    const priLow = document.createElement('option');
-    const priMed = document.createElement('option');
-    const priHigh = document.createElement('option');
-
-    priLow.textContent = 'Low';
-    priLow.value=1;
-    priMed.textContent = 'Medium';
-    priMed.value = 2;
-    priHigh.textContent = 'High';
-    priHigh.value = 3;
+    const select = renderTodoPriorityLevelSelector();
     
-    
-    inputPriority.append(priLow, priMed, priHigh);
-    select.append(inputPriority);
-    
-
     const inputDate = document.createElement('input');
     inputDate.type = 'date';
     inputDate.name = 'todoDate';
@@ -207,7 +187,6 @@ function createUI(app) {
         
         inputTitle.textContent = '';
         inputDesc.textContent = '';
-        inputPriority.textContent = '';
         inputDate.textContent = '';
         render();
       });
@@ -224,7 +203,6 @@ function createUI(app) {
 
   const container = document.createElement('div');
 
-
   // is it clearing? or is it just not rendering??
   function clearTodoEditContainer(){
     while(container.hasChildNodes()){
@@ -240,35 +218,62 @@ function createUI(app) {
     const activeTodo = app.getActiveTodo();
     if(!activeTodo) return;
 
-    const todoTitle = document.createElement('span');
+    const overlay = document.createElement('div');
+    overlay.classList.add("overlay");
+
+    const sidebar = document.createElement('div');
+    sidebar.classList.add('sidebar');
+
+    const todoTitle = document.createElement('h1');
     todoTitle.textContent = activeTodo.title;
 
+    const todoDescriptionContainer = document.createElement('div');
+    const descLabel = document.createElement('h3');
+    descLabel.textContent = 'Description:';
     const todoDescription = document.createElement('p');
     todoDescription.textContent = activeTodo.desc;
+    todoDescriptionContainer.append(descLabel, todoDescription);
 
-    const priorityLevelContainer = document.createElement('div');
+    const todoPriorityLevelContainer = document.createElement('div');
+    const priLabel = document.createElement('h3');
+    priLabel.textContent = 'Priority Level';
     const todoPriorityLevel = document.createElement('p');
     todoPriorityLevel.textContent = activeTodo.pri;
-    priorityLevelContainer.appendChild(todoPriorityLevel);
+    todoPriorityLevelContainer.append(priLabel, todoPriorityLevel);
 
+    const todoDueDateContainer = document.createElement('div');
+    const dueDateLabel = document.createElement('h3');
+    dueDateLabel.textContent = 'Due Date:';
     const todoDueDate = document.createElement('p');
     todoDueDate.textContent = activeTodo.date;
+    todoDueDateContainer.append(dueDateLabel, todoDueDate);
 
-    container.append(todoTitle, todoDescription, priorityLevelContainer, todoDueDate);
-    content.append(container);
+    sidebar.append(todoTitle, todoDescriptionContainer, todoPriorityLevelContainer, todoDueDateContainer);
+    overlay.appendChild(sidebar);
+    content.appendChild(overlay);
+
+    sidebar.addEventListener('click', (e) => {
+      e.stopImmediatePropagation();
+    })
+
+    overlay.addEventListener('click', () => {
+      overlay.remove();
+      render();
+    })
 
     todoTitle.addEventListener('click', () => {
       const titleInput = document.createElement('input');
       titleInput.type = 'text';
       titleInput.value = activeTodo.title;
-      container.replaceChild(titleInput, todoTitle);
+      sidebar.replaceChild(titleInput, todoTitle);
       titleInput.focus();
 
       titleInput.addEventListener('blur', () => {
         if(titleInput.value.trim() !== ''){
             app.updateTodoTitle(titleInput.value);
+            todoTitle.textContent = activeTodo.title;
           }
-          render();
+        sidebar.replaceChild(todoTitle, titleInput);
       })
 
       titleInput.addEventListener('keydown', (e) => {
@@ -277,6 +282,93 @@ function createUI(app) {
         }
       })
     })
+
+    todoDescription.addEventListener('click', () => {
+      const descInput = document.createElement('input');
+      descInput.type = 'text';
+      descInput.value = activeTodo.desc;
+      todoDescriptionContainer.replaceChild(descInput, todoDescription);
+      descInput.focus();
+
+      descInput.addEventListener('blur', () => {
+        if(descInput.value.trim() !== ''){
+            app.updateTodoDesc(descInput.value);
+            todoDescription.textContent = activeTodo.desc;
+          }
+        todoDescriptionContainer.replaceChild(todoDescription, descInput);
+      })
+
+      descInput.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter'){
+          descInput.blur();
+        }
+      })
+    })
+
+    todoPriorityLevel.addEventListener('click', () => {
+      const select = renderTodoPriorityLevelSelector();
+      todoPriorityLevelContainer.replaceChild(select, todoPriorityLevel);
+      select.focus();
+
+      select.addEventListener('blur', () => {
+        app.updateTodoPriLevel(select.value);
+        todoPriorityLevel.textContent = activeTodo.pri;
+        todoPriorityLevelContainer.replaceChild(todoPriorityLevel, select);
+      })
+
+      select.addEventListener('keydown', (e) => {
+        if(e.key === 'Enter'){
+          select.blur();
+        }
+      })
+    })
+
+    todoDueDate.addEventListener('click', () => {
+      const inputDate = document.createElement('input');
+      inputDate.type = 'date';
+
+      todoDueDateContainer.replaceChild(inputDate, todoDueDate);
+      inputDate.focus();
+
+      inputDate.addEventListener('blur', () => {
+        const today = new Date();
+        const [year, month, day] = inputDate.value.split('-');
+        const input = new Date(year, month - 1, day);
+
+        if(isBefore(input, today)){
+          alert('Date must be in the future!');
+          return;
+        }
+
+        const formattedDate = format(input, 'MM/dd/yyyy');
+        app.updateTodoDueDate(formattedDate);
+        todoDueDate.textContent = activeTodo.date;
+        todoDueDateContainer.replaceChild(todoDueDate, inputDate);
+      })
+    })
+  }
+
+  function renderTodoPriorityLevelSelector(){
+      const select = document.createElement('select');
+      select.name = 'todoPri';
+      select.required = true;
+      const inputPriority = document.createElement('optgroup');
+      inputPriority.label = 'Priority Level';
+
+      const priLow = document.createElement('option');
+      const priMed = document.createElement('option');
+      const priHigh = document.createElement('option');
+
+      priLow.textContent = 'Low';
+      priLow.value=1;
+      priMed.textContent = 'Medium';
+      priMed.value = 2;
+      priHigh.textContent = 'High';
+      priHigh.value = 3;
+      
+      inputPriority.append(priLow, priMed, priHigh);
+      select.append(inputPriority);
+      return select;
   }
 
   function clear(){
