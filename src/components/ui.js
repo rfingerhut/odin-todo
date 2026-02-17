@@ -69,7 +69,7 @@ function createUI(app) {
         })
       });
 
-      li.appendChild(projectTitle, button);
+      li.append(projectTitle, button);
 
       li.addEventListener('click', ()=>{
         app.setActiveProject(project);
@@ -390,5 +390,5 @@ function createUI(app) {
     init,
   };
 }
-
+// DELETE PROJECT BUTTON? FIX TODAY NOT BEING A VIABLE DUEDATE. CHANGE PRIORITY LEVEL FROM DISPLAYING NUMBER TO WORD.
 export default createUI;
