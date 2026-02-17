@@ -103,6 +103,12 @@ function createUI(app) {
 
   }
 
+  const PRIORITY_LABELS = {
+    1: 'Low',
+    2: 'Medium',
+    3: 'High'
+  };
+
   function renderTodos(){
     const activeProject = app.getActiveProject();
     if(!activeProject) return;
@@ -162,7 +168,7 @@ function createUI(app) {
       const date = document.createElement('p');
       title.textContent = todo.title;
       desc.textContent = todo.desc;
-      pri.textContent = todo.pri;
+      pri.textContent = PRIORITY_LABELS[todo.pri];
       date.textContent = todo.date;
       card.id = todo.id;
       card.append(title, desc, pri, date, button);
@@ -392,5 +398,5 @@ function createUI(app) {
     init,
   };
 }
-// CHANGE PRIORITY LEVEL FROM DISPLAYING NUMBER TO WORD.
+
 export default createUI;
