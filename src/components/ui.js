@@ -2,23 +2,41 @@ import { format, isBefore, isToday } from "date-fns";
 
 function createUI(app) {
   const content = document.getElementById('content');
-
+  
   function init(){
     render();
   }
 
   function render(){
-    clear();
+    // clear();
+    renderHeader();
     renderProjects();
     renderTodos();
   }
 
+  function renderHeader(){
+    const header = document.getElementById('header');
+    header.textContent = '';
+
+    const activeProject = app.getActiveProject();
+    if (!activeProject) return;
+    console.log(activeProject.title);
+    const title = document.createElement('h1');
+    title.textContent = activeProject.title;
+
+    header.appendChild(title);
+  }
+
   function renderProjects(){
+    const sidebar = document.getElementById('sidebar');
+    sidebar.textContent = '';
     const projects = app.getAllProjects();
 
-    const section = document.createElement('section');
     const ul = document.createElement('ul');
+    ul.classList.add('project-list');
     const form = document.createElement('form');
+    form.classList.add('project-form');
+
     const input = document.createElement('input');
     const label = document.createElement('label');
     label.for = 'projectTitle';
@@ -31,18 +49,18 @@ function createUI(app) {
     button.textContent = 'submit';
 
     form.append(input, label, button);
-    content.append(form, section);
 
     projects.forEach(project => {
       const button = document.createElement('button');
       button.textContent = 'X';
-      button.classList.add('deleteProjectButton');
+      button.classList.add('delete-project-button');
 
       const li = document.createElement('li');
       li.id = project.id;
-      li.classList.add('project');
+      li.classList.add('project-item');
 
       const projectTitle = document.createElement('span');
+      projectTitle.classList.add('project-title');
       projectTitle.textContent = project.title;
 
       projectTitle.addEventListener('click', (el) => {
@@ -78,7 +96,8 @@ function createUI(app) {
 
       ul.append(li);
     });
-    section.appendChild(ul);
+    sidebar.append(ul);
+    content.append(form, sidebar);
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -113,10 +132,13 @@ function createUI(app) {
     const activeProject = app.getActiveProject();
     if(!activeProject) return;
 
+    const todoSection = document.getElementById('todo-section');
+    todoSection.textContent = '';
+
     const todos = app.showAllTodosOfActiveProject();
-    const section = document.createElement('section');
 
     const form = document.createElement('form');
+    form.classList.add('todo-form');
 
     const inputTitle = document.createElement('input');
     inputTitle.placeholder = "Todo";
@@ -148,13 +170,14 @@ function createUI(app) {
     button.type = 'submit';
     button.textContent = 'submit';
     form.append(inputTitle, labelTitle, inputDesc, labelDesc, select, inputDate, labelDate, button);
-    section.appendChild(form);
+    todoSection.appendChild(form);
 
     const list = document.createElement('ul');
+    list.classList.add('todo-list');
     todos.forEach(todo => {
       const button = document.createElement('button');
       button.textContent = '';
-      button.classList.add('completeTodoButton');
+      button.classList.add('complete-todo-button');
       button.addEventListener('click', () => {
         app.deleteTodo(button.parentElement.id);
         render();
@@ -162,15 +185,19 @@ function createUI(app) {
       )
       const li = document.createElement('li');
       const card = document.createElement('div');
+      card.classList.add('todo-card');
+
       const title = document.createElement('p');
       const desc = document.createElement('p');
       const pri = document.createElement('p');
       const date = document.createElement('p');
+
       title.textContent = todo.title;
       desc.textContent = todo.desc;
       pri.textContent = PRIORITY_LABELS[todo.pri];
       date.textContent = todo.date;
       card.id = todo.id;
+
       card.append(title, desc, pri, date, button);
       li.append(card);
       list.appendChild(li);
@@ -204,8 +231,8 @@ function createUI(app) {
         render();
       });
 
-    section.appendChild(list);
-    content.appendChild(section);
+    todoSection.appendChild(list);
+    content.appendChild(todoSection);
 
     document.querySelectorAll('.completeTodoButton').forEach(button => button.addEventListener('click', () => {
       app.deleteTodo(button.parentElement.id);
@@ -223,8 +250,8 @@ function createUI(app) {
     const overlay = document.createElement('div');
     overlay.classList.add("overlay");
 
-    const sidebar = document.createElement('div');
-    sidebar.classList.add('sidebar');
+    const editBar = document.createElement('div');
+    editBar.classList.add('editBar');
 
     const todoTitle = document.createElement('h1');
     todoTitle.textContent = activeTodo.title;
@@ -250,11 +277,11 @@ function createUI(app) {
     todoDueDate.textContent = activeTodo.date;
     todoDueDateContainer.append(dueDateLabel, todoDueDate);
 
-    sidebar.append(todoTitle, todoDescriptionContainer, todoPriorityLevelContainer, todoDueDateContainer);
-    overlay.appendChild(sidebar);
+    editBar.append(todoTitle, todoDescriptionContainer, todoPriorityLevelContainer, todoDueDateContainer);
+    overlay.appendChild(editBar);
     content.appendChild(overlay);
 
-    sidebar.addEventListener('click', (e) => {
+    editBar.addEventListener('click', (e) => {
       e.stopPropagation();
     })
 
@@ -266,7 +293,7 @@ function createUI(app) {
       const titleInput = document.createElement('input');
       titleInput.type = 'text';
       titleInput.value = activeTodo.title;
-      sidebar.replaceChild(titleInput, todoTitle);
+      editBar.replaceChild(titleInput, todoTitle);
       titleInput.focus();
 
       titleInput.addEventListener('blur', () => {
@@ -276,7 +303,7 @@ function createUI(app) {
 
             updateTodoCard(activeTodo.id);
           }
-        sidebar.replaceChild(todoTitle, titleInput);
+        editBar.replaceChild(todoTitle, titleInput);
       })
 
       titleInput.addEventListener('keydown', (e) => {
