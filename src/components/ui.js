@@ -1,4 +1,4 @@
-import { format, isBefore } from "date-fns";
+import { format, isBefore, isToday } from "date-fns";
 
 function createUI(app) {
   const content = document.getElementById('content');
@@ -181,7 +181,9 @@ function createUI(app) {
         const [year, month, day] = inputDate.value.split('-');
         const input = new Date(year, month - 1, day);
 
-        if(isBefore(input, today)){
+        console.log(`input ${input} and today ${today}`);
+
+        if(isBefore(input, today) && !isToday(input)){
           alert('Date must be in the future!');
           return;
         }
@@ -390,5 +392,5 @@ function createUI(app) {
     init,
   };
 }
-// DELETE PROJECT BUTTON? FIX TODAY NOT BEING A VIABLE DUEDATE. CHANGE PRIORITY LEVEL FROM DISPLAYING NUMBER TO WORD.
+// CHANGE PRIORITY LEVEL FROM DISPLAYING NUMBER TO WORD.
 export default createUI;
