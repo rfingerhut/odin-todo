@@ -186,11 +186,17 @@ function createUI(app) {
       const li = document.createElement('li');
       const card = document.createElement('div');
       card.classList.add('todo-card');
+      const todoInfo = document.createElement('div');
+      todoInfo.classList.add('todo-info');
 
-      const title = document.createElement('p');
+      const title = document.createElement('h3');
+      title.classList.add('todo-title');
       const desc = document.createElement('p');
+      desc.classList.add('todo-desc');
       const pri = document.createElement('p');
+      pri.classList.add('todo-pri');
       const date = document.createElement('p');
+      date.classList.add('todo-date');
 
       title.textContent = todo.title;
       desc.textContent = todo.desc;
@@ -198,7 +204,8 @@ function createUI(app) {
       date.textContent = todo.date;
       card.id = todo.id;
 
-      card.append(title, desc, pri, date, button);
+      todoInfo.append(title, desc, pri, date);
+      card.append(button, todoInfo);
       li.append(card);
       list.appendChild(li);
 
