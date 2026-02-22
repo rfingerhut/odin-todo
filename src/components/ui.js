@@ -20,9 +20,32 @@ function createUI(app) {
 
     const activeProject = app.getActiveProject();
     if (!activeProject) return;
-    console.log(activeProject.title);
     const title = document.createElement('h1');
     title.textContent = activeProject.title;
+
+    title.addEventListener('click', (el) => {
+        el.stopPropagation();
+
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = activeProject.title;
+
+        header.replaceChild(input, title);
+        input.focus();
+
+        input.addEventListener('blur', () => {
+          if(input.value.trim() !== ''){
+            app.updateProjectTitle(activeProject.id, input.value);
+          }
+          render();
+        })
+
+        input.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter'){
+            input.blur();
+          }
+        })
+      });
 
     header.appendChild(title);
   }
@@ -40,7 +63,7 @@ function createUI(app) {
     const input = document.createElement('input');
     const label = document.createElement('label');
     label.for = 'projectTitle';
-    input.placeholder = "Project Name";
+    input.placeholder = "New Project";
     input.type = 'text';
     input.name = 'projectTitle';
     input.required = true;
@@ -62,42 +85,18 @@ function createUI(app) {
       const projectTitle = document.createElement('span');
       projectTitle.classList.add('project-title');
       projectTitle.textContent = project.title;
-
-      projectTitle.addEventListener('click', (el) => {
-        el.stopPropagation();
-
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.value = project.title;
-
-        li.replaceChild(input, projectTitle);
-        input.focus();
-
-        input.addEventListener('blur', () => {
-          if(input.value.trim() !== ''){
-            app.updateProjectTitle(project.id, input.value);
-          }
-          render();
-        })
-
-        input.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter'){
-            input.blur();
-          }
-        })
-      });
-
+ 
       li.append(projectTitle, button);
 
-      li.addEventListener('click', ()=>{
+      projectTitle.addEventListener('click', ()=>{
         app.setActiveProject(project);
         render();
       })
 
       ul.append(li);
     });
-    sidebar.append(ul);
-    content.append(form, sidebar);
+    sidebar.append(form, ul);
+    content.append(sidebar);
 
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -110,7 +109,7 @@ function createUI(app) {
       render();
     })
 
-    const deleteProjButton = document.querySelectorAll('.deleteProjectButton');
+    const deleteProjButton = document.querySelectorAll('.delete-project-button');
     deleteProjButton.forEach(button => {
       button.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -199,7 +198,7 @@ function createUI(app) {
       date.classList.add('todo-date');
 
       title.textContent = todo.title;
-      desc.textContent = todo.desc;
+      desc.textContent = todo.desc || 'No description';
       pri.textContent = PRIORITY_LABELS[todo.pri];
       date.textContent = todo.date;
       card.id = todo.id;
@@ -209,9 +208,99 @@ function createUI(app) {
       li.append(card);
       list.appendChild(li);
 
-      card.addEventListener('click', () => {
+      title.addEventListener('click', () => {
         app.setActiveTodo(todo.id);
-        renderTodoEdit();
+        const activeTodo = app.getActiveTodo();
+        const titleInput = document.createElement('input');
+        titleInput.type = 'text';
+        titleInput.value = activeTodo.title;
+        todoInfo.replaceChild(titleInput, title);
+        titleInput.focus();
+
+        titleInput.addEventListener('blur', () => {
+          if(titleInput.value.trim() !== ''){
+            app.updateTodoTitle(activeTodo.id, titleInput.value);
+            title.textContent = activeTodo.title;
+          }
+          todoInfo.replaceChild(title, titleInput);
+        })
+
+        titleInput.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter'){
+            titleInput.blur();
+          }
+        })
+      })
+
+      desc.addEventListener('click', () => {
+        app.setActiveTodo(todo.id);
+        const activeTodo = app.getActiveTodo();
+        const descInput = document.createElement('input');
+        descInput.type = 'text';
+        descInput.value = activeTodo.desc;
+        todoInfo.replaceChild(descInput, desc);
+        descInput.focus();
+
+        descInput.addEventListener('blur', () => {
+          if(descInput.value.trim() !== ''){
+            app.updateTodoDesc(activeTodo.id, descInput.value);
+            desc.textContent = activeTodo.desc;
+          }
+          todoInfo.replaceChild(desc, descInput);
+        })
+
+        descInput.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter'){
+            descInput.blur();
+          }
+        })
+      })
+
+      pri.addEventListener('click', () => {
+        app.setActiveTodo(todo.id);
+        const activeTodo = app.getActiveTodo();
+        const select = renderTodoPriorityLevelSelector();
+        todoInfo.replaceChild(select, pri);
+        select.focus();
+
+        select.addEventListener('blur', () => {
+          app.updateTodoPriLevel(activeTodo.id, select.value);
+          pri.textContent = PRIORITY_LABELS[activeTodo.pri]
+          todoInfo.replaceChild(pri, select);
+        })
+
+        select.addEventListener('keydown', (e) => {
+          if(e.key === 'Enter'){
+            select.blur();
+          }
+        })
+      })
+
+      date.addEventListener('click', () => {
+        app.setActiveTodo(todo.id);
+        const activeTodo = app.getActiveTodo();
+
+        const inputDate = document.createElement('input');
+        inputDate.type = 'date';
+
+        todoInfo.replaceChild(inputDate, date);
+        inputDate.focus();
+
+        inputDate.addEventListener('blur', () => {
+          const today = new Date();
+          const [year, month, day] = inputDate.value.split('-');
+          const input = new Date(year, month - 1, day);
+
+          if(isBefore(input, today)){
+            alert('Date must be in the future!');
+            return;
+          }
+
+          const formattedDate = format(input, 'MM/dd/yyyy');
+          app.updateTodoDueDate(activeTodo.id, formattedDate);
+          date.textContent = activeTodo.date;
+          todoInfo.replaceChild(date, inputDate);
+        })
       })
     })
 
@@ -248,145 +337,6 @@ function createUI(app) {
     ));
   }
 
-  function renderTodoEdit(){
-    const activeProject = app.getActiveProject();
-    if(!activeProject) return;
-    const activeTodo = app.getActiveTodo();
-    if(!activeTodo) return;
-
-    const overlay = document.createElement('div');
-    overlay.classList.add("overlay");
-
-    const editBar = document.createElement('div');
-    editBar.classList.add('editBar');
-
-    const todoTitle = document.createElement('h1');
-    todoTitle.textContent = activeTodo.title;
-
-    const todoDescriptionContainer = document.createElement('div');
-    const descLabel = document.createElement('h3');
-    descLabel.textContent = 'Description:';
-    const todoDescription = document.createElement('p');
-    todoDescription.textContent = activeTodo.desc;
-    todoDescriptionContainer.append(descLabel, todoDescription);
-
-    const todoPriorityLevelContainer = document.createElement('div');
-    const priLabel = document.createElement('h3');
-    priLabel.textContent = 'Priority Level';
-    const todoPriorityLevel = document.createElement('p');
-    todoPriorityLevel.textContent = activeTodo.pri;
-    todoPriorityLevelContainer.append(priLabel, todoPriorityLevel);
-
-    const todoDueDateContainer = document.createElement('div');
-    const dueDateLabel = document.createElement('h3');
-    dueDateLabel.textContent = 'Due Date:';
-    const todoDueDate = document.createElement('p');
-    todoDueDate.textContent = activeTodo.date;
-    todoDueDateContainer.append(dueDateLabel, todoDueDate);
-
-    editBar.append(todoTitle, todoDescriptionContainer, todoPriorityLevelContainer, todoDueDateContainer);
-    overlay.appendChild(editBar);
-    content.appendChild(overlay);
-
-    editBar.addEventListener('click', (e) => {
-      e.stopPropagation();
-    })
-
-    overlay.addEventListener('click', () => {
-      overlay.remove();
-    })
-
-    todoTitle.addEventListener('click', () => {
-      const titleInput = document.createElement('input');
-      titleInput.type = 'text';
-      titleInput.value = activeTodo.title;
-      editBar.replaceChild(titleInput, todoTitle);
-      titleInput.focus();
-
-      titleInput.addEventListener('blur', () => {
-        if(titleInput.value.trim() !== ''){
-            app.updateTodoTitle(activeTodo.id, titleInput.value);
-            todoTitle.textContent = activeTodo.title;
-
-            updateTodoCard(activeTodo.id);
-          }
-        editBar.replaceChild(todoTitle, titleInput);
-      })
-
-      titleInput.addEventListener('keydown', (e) => {
-        if(e.key === 'Enter'){
-          titleInput.blur();
-        }
-      })
-    })
-
-    todoDescription.addEventListener('click', () => {
-      const descInput = document.createElement('input');
-      descInput.type = 'text';
-      descInput.value = activeTodo.desc;
-      todoDescriptionContainer.replaceChild(descInput, todoDescription);
-      descInput.focus();
-
-      descInput.addEventListener('blur', () => {
-        if(descInput.value.trim() !== ''){
-            app.updateTodoDesc(activeTodo.id, descInput.value);
-            todoDescription.textContent = activeTodo.desc;
-          }
-        todoDescriptionContainer.replaceChild(todoDescription, descInput);
-        updateTodoCard(activeTodo.id);
-      })
-
-      descInput.addEventListener('keydown', (e) => {
-        if(e.key === 'Enter'){
-          descInput.blur();
-        }
-      })
-    })
-
-    todoPriorityLevel.addEventListener('click', () => {
-      const select = renderTodoPriorityLevelSelector();
-      todoPriorityLevelContainer.replaceChild(select, todoPriorityLevel);
-      select.focus();
-
-      select.addEventListener('blur', () => {
-        app.updateTodoPriLevel(activeTodo.id, select.value);
-        todoPriorityLevel.textContent = activeTodo.pri;
-        todoPriorityLevelContainer.replaceChild(todoPriorityLevel, select);
-        updateTodoCard(activeTodo.id);
-      })
-
-      select.addEventListener('keydown', (e) => {
-        if(e.key === 'Enter'){
-          select.blur();
-        }
-      })
-    })
-
-    todoDueDate.addEventListener('click', () => {
-      const inputDate = document.createElement('input');
-      inputDate.type = 'date';
-
-      todoDueDateContainer.replaceChild(inputDate, todoDueDate);
-      inputDate.focus();
-
-      inputDate.addEventListener('blur', () => {
-        const today = new Date();
-        const [year, month, day] = inputDate.value.split('-');
-        const input = new Date(year, month - 1, day);
-
-        if(isBefore(input, today)){
-          alert('Date must be in the future!');
-          return;
-        }
-
-        const formattedDate = format(input, 'MM/dd/yyyy');
-        app.updateTodoDueDate(activeTodo.id, formattedDate);
-        todoDueDate.textContent = activeTodo.date;
-        todoDueDateContainer.replaceChild(todoDueDate, inputDate);
-        updateTodoCard(activeTodo.id);
-      })
-    })
-  }
 
   function renderTodoPriorityLevelSelector(){
       const select = document.createElement('select');
@@ -417,10 +367,12 @@ function createUI(app) {
     
     const updatedTodo = app.getActiveTodo();
 
-    const [titleEl, descEl, priEl, dateEl] = card.children;
+    const todoInfo = card.querySelector('.todo-info');
+    if(!todoInfo) return;
+    const [titleEl, descEl, priEl, dateEl] = todoInfo.children;
     titleEl.textContent = updatedTodo.title;
     descEl.textContent = updatedTodo.desc;
-    priEl.textContent = updatedTodo.pri;
+    priEl.textContent = PRIORITY_LABELS[updatedTodo.pri];
     dateEl.textContent = updatedTodo.date;
   }
 
