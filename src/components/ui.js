@@ -168,6 +168,7 @@ function createUI(app) {
     const button = document.createElement('button');
     button.type = 'submit';
     button.textContent = 'submit';
+    button.classList.add('submit-button');
     form.append(inputTitle, labelTitle, inputDesc, labelDesc, select, inputDate, labelDate, button);
     todoSection.appendChild(form);
 
@@ -264,8 +265,12 @@ function createUI(app) {
         select.focus();
 
         select.addEventListener('blur', () => {
+          if(select.value === ''){
+            todoInfo.replaceChild(pri, select);
+            return;
+          }
           app.updateTodoPriLevel(activeTodo.id, select.value);
-          pri.textContent = PRIORITY_LABELS[activeTodo.pri]
+          pri.textContent = PRIORITY_LABELS[activeTodo.pri];
           todoInfo.replaceChild(pri, select);
         })
 
@@ -288,10 +293,15 @@ function createUI(app) {
 
         inputDate.addEventListener('blur', () => {
           const today = new Date();
+          const formattedToday = format(today, 'MM/dd/yyyy');
+          if(inputDate.value === ''){
+            todoInfo.replaceChild(date, inputDate);
+            return;
+          }
           const [year, month, day] = inputDate.value.split('-');
-          const input = new Date(year, month - 1, day);
+          const input = new Date(year, month - 1, day);         
 
-          if(isBefore(input, today)){
+          if(isBefore(input, formattedToday)){
             alert('Date must be in the future!');
             return;
           }
@@ -313,7 +323,7 @@ function createUI(app) {
         console.log(`input ${input} and today ${today}`);
 
         if(isBefore(input, today) && !isToday(input)){
-          alert('Date must be in the future!');
+          alert('Date cannot be in the past!')
           return;
         }
 
@@ -342,8 +352,10 @@ function createUI(app) {
       const select = document.createElement('select');
       select.name = 'todoPri';
       select.required = true;
+      const option = document.createElement('option');
+      option.value = '';
+      option.textContent = 'Priority level';
       const inputPriority = document.createElement('optgroup');
-      inputPriority.label = 'Priority Level';
 
       const priLow = document.createElement('option');
       const priMed = document.createElement('option');
@@ -357,7 +369,7 @@ function createUI(app) {
       priHigh.value = 3;
       
       inputPriority.append(priLow, priMed, priHigh);
-      select.append(inputPriority);
+      select.append(option, inputPriority);
       return select;
   }
 
