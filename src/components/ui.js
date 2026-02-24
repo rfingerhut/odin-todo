@@ -82,11 +82,14 @@ function createUI(app) {
       li.id = project.id;
       li.classList.add('project-item');
 
+      const projectTitleContainer = document.createElement('div');
+      projectTitleContainer.classList.add('project-title-container');
       const projectTitle = document.createElement('span');
       projectTitle.classList.add('project-title');
       projectTitle.textContent = project.title;
+      projectTitleContainer.append(projectTitle);
  
-      li.append(projectTitle, button);
+      li.append(projectTitleContainer, button);
 
       projectTitle.addEventListener('click', ()=>{
         app.setActiveProject(project);
