@@ -1,11 +1,11 @@
 :root {
-  --bg: #F5F7F6;
+  --bg: #f9f9f9;
   --sidebar: #FFFFFF;
-  --header: #2F3E46;
-  --primary: #52796F;
-  --accent: #CAD2C5;
-  --text: #344E41;
-  --muted: #6B9080;
+  --header: #000000;
+  --primary: #000000;
+  --accent: #cecece;
+  --text: #5d5e5d;
+  --muted: #7e7e7e;
 }
 
 body{
@@ -96,7 +96,7 @@ ul{
 }
 
 .project-title:hover {
-  background: var(--accent);
+  color: var(--accent);
 }
 
 .project-title{
