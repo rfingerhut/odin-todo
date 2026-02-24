@@ -71,7 +71,7 @@ function createApp() {
       }
 
       if(projectID === activeProject.id){
-         activeProject = null;
+         activeProject = projects[0] || '';
       }
       projects[index].todos = [];
       projects.splice(index, 1);
