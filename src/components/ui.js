@@ -191,9 +191,25 @@ function createUI(app) {
       card.classList.add('todo-card');
       const todoInfo = document.createElement('div');
       todoInfo.classList.add('todo-info');
-
+      todoInfo.classList.add('collapsed');
+      const todoHeaderContainer = document.createElement('div');
+      todoHeaderContainer.classList.add('todo-header-container');
       const title = document.createElement('h3');
       title.classList.add('todo-title');
+      const showMoreButton = document.createElement('button');
+      showMoreButton.textContent = 'Show Details';
+      showMoreButton.classList.add('show-more-button');
+
+      showMoreButton.addEventListener('click', (e) => {   
+          e.stopPropagation();
+          todoInfo.classList.toggle('collapsed');    
+          if(!todoInfo.classList.contains('collapsed')){
+            showMoreButton.textContent = 'Hide Details';
+          } else {
+            showMoreButton.textContent = 'Show Details';
+          }
+      })
+
       const desc = document.createElement('p');
       desc.classList.add('todo-desc');
       const pri = document.createElement('p');
@@ -207,8 +223,9 @@ function createUI(app) {
       date.textContent = todo.date;
       card.id = todo.id;
 
-      todoInfo.append(title, desc, pri, date);
-      card.append(button, todoInfo);
+      todoHeaderContainer.append(button, title, showMoreButton);
+      todoInfo.append(desc, pri, date);
+      card.append(todoHeaderContainer, todoInfo);
       li.append(card);
       list.appendChild(li);
 
@@ -343,8 +360,8 @@ function createUI(app) {
     todoSection.appendChild(list);
     content.appendChild(todoSection);
 
-    document.querySelectorAll('.completeTodoButton').forEach(button => button.addEventListener('click', () => {
-      app.deleteTodo(button.parentElement.id);
+    document.querySelectorAll('.complete-todo-button').forEach(button => button.addEventListener('click', (e) => {
+      app.deleteTodo(button.parentElement.parentElement.id);
       render();
     }
     ));
