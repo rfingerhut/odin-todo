@@ -149,7 +149,7 @@ ul{
 
 .todo-card{
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     gap: 1rem;
     width: 50%;
 
@@ -157,6 +157,14 @@ ul{
     padding: 1rem;
     border-radius: 8px;
     box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.todo-header-container{
+    display: flex;
+    flex-direction: row;
+    justify-content:flex-start;
+    align-items: center;
+    gap: 16px;
 }
 
 .complete-todo-button{
@@ -168,6 +176,11 @@ ul{
     background-color: var(--accent);
     color: var(--text);
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.187);
+}
+
+.show-more-button{
+    width: 100px;
+    height: 40px;
 }
 
 .todo-info{
@@ -191,4 +204,8 @@ ul{
     width: 25%;
     padding: 4px;
     width: 70px;
+}
+
+.collapsed > p{
+    display: none;
 }
