@@ -1,4 +1,3 @@
-
 //     constructor(title, description, priority, dueDate){
 //         this.title = title;
 //         this.description = description;
@@ -30,15 +29,15 @@
 // }
 
 // export default Todo;
-function createTodo(title, desc, pri, date){
-    return{
-        title,
-        desc,
-        pri,
-        date,
-        id: crypto.randomUUID(),
-        completed: false,
-    }
+function createTodo(title, desc, pri, date) {
+  return {
+    title,
+    desc,
+    pri,
+    date,
+    id: crypto.randomUUID(),
+    completed: false,
+  };
 }
 
 export default createTodo;

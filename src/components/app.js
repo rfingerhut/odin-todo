@@ -2,194 +2,194 @@ import createProject from "./project";
 import createTodo from "./todo";
 
 function createApp() {
-   let projects = [];
-   let activeProject = null;
-   let activeTodo = null;
+  let projects = [];
+  let activeProject = null;
+  let activeTodo = null;
 
-   loadProjects();
+  loadProjects();
 
-   function addProject(title){
-      const newProject = createProject(title);
+  function addProject(title) {
+    const newProject = createProject(title);
 
-      projects.push(newProject);
-      activeProject = newProject;
-      saveProjects();
-      return newProject;
-   }
+    projects.push(newProject);
+    activeProject = newProject;
+    saveProjects();
+    return newProject;
+  }
 
-   function updateProjectTitle(id, newTitle){
-      getProjectById(id).title = newTitle;
-      saveProjects();
-   }
+  function updateProjectTitle(id, newTitle) {
+    getProjectById(id).title = newTitle;
+    saveProjects();
+  }
 
-   function getActiveProject(){
-      return activeProject;
-   }
+  function getActiveProject() {
+    return activeProject;
+  }
 
-   function setActiveProject(project){
-      activeProject = project;
-   }
+  function setActiveProject(project) {
+    activeProject = project;
+  }
 
-   function getProjectById(id){
-      const project = projects.find((el) => el.id === id);
-      return project;
-   }
+  function getProjectById(id) {
+    const project = projects.find((el) => el.id === id);
+    return project;
+  }
 
-   function addTodo(title, desc, pri, date){
-      const project = getActiveProject();
-      if (!project) return false;
+  function addTodo(title, desc, pri, date) {
+    const project = getActiveProject();
+    if (!project) return false;
 
-      const todo = createTodo(title, desc, pri, date);
+    const todo = createTodo(title, desc, pri, date);
 
-      project.todos.push(todo);
-      saveProjects();
-      return true;
-   }
+    project.todos.push(todo);
+    saveProjects();
+    return true;
+  }
 
-   function getAllProjects(){
-      return projects;
-   }
+  function getAllProjects() {
+    return projects;
+  }
 
-   function deleteActiveProject(){
-     const index = projects.findIndex((el) => el.id === activeProject.id);
+  function deleteActiveProject() {
+    const index = projects.findIndex((el) => el.id === activeProject.id);
 
-      if (index === -1){
-         return false;
-      }
+    if (index === -1) {
+      return false;
+    }
 
-      projects.splice(index, 1);
-      activeProject = null;
-      saveProjects();
-      return true; 
-   }
+    projects.splice(index, 1);
+    activeProject = null;
+    saveProjects();
+    return true;
+  }
 
-   function deleteProjectByID(projectID){
-      const index = projects.findIndex((el) => el.id === projectID);
+  function deleteProjectByID(projectID) {
+    const index = projects.findIndex((el) => el.id === projectID);
 
-      if (index === -1){
-         return false;
-      }
+    if (index === -1) {
+      return false;
+    }
 
-      if(projectID === activeProject.id){
-         activeProject = projects[0] || '';
-      }
-      projects[index].todos = [];
-      projects.splice(index, 1);
-      saveProjects();
-      return true;
-   }
+    if (projectID === activeProject.id) {
+      activeProject = projects[0] || "";
+    }
+    projects[index].todos = [];
+    projects.splice(index, 1);
+    saveProjects();
+    return true;
+  }
 
-   function showAllTodosOfActiveProject(){
-      const project = getActiveProject();
-      return project ? project.todos : [];
-   }
+  function showAllTodosOfActiveProject() {
+    const project = getActiveProject();
+    return project ? project.todos : [];
+  }
 
-   function deleteTodo(id){
-      const project = getActiveProject();
-      if(!project){
-         return false;
-      }
+  function deleteTodo(id) {
+    const project = getActiveProject();
+    if (!project) {
+      return false;
+    }
 
-      const index = project.todos.findIndex(el => el.id === id);
-      if (index === -1) return false;
+    const index = project.todos.findIndex((el) => el.id === id);
+    if (index === -1) return false;
 
-      project.todos.splice(index, 1);
-      saveProjects();
-      return true;   
-   }
+    project.todos.splice(index, 1);
+    saveProjects();
+    return true;
+  }
 
-   function markTodoComplete(id){
-      const project = getActiveProject();
-      const todo = project.getAllTodos().find((el) => el.id === id)
-      
-      if (!todo){
-         return false;
-      }
+  function markTodoComplete(id) {
+    const project = getActiveProject();
+    const todo = project.getAllTodos().find((el) => el.id === id);
 
-      todo.completed = true;
-      saveProjects();
-      return true;
-   }
+    if (!todo) {
+      return false;
+    }
 
-   function setActiveTodo(id){
-      const project = getActiveProject();
-      const todo = project.todos.find((el) => el.id === id)
-      activeTodo = todo;
-      saveProjects();
-   }
+    todo.completed = true;
+    saveProjects();
+    return true;
+  }
 
-   function getActiveTodo(){
-      return activeTodo;
-   }
+  function setActiveTodo(id) {
+    const project = getActiveProject();
+    const todo = project.todos.find((el) => el.id === id);
+    activeTodo = todo;
+    saveProjects();
+  }
 
-   function getTodoByID(id){
-      const project = getActiveProject();
-      const todo = project.todos.find((el => el.id === id));
-      if(todo === null) console.log('no todo found');
-      return todo;
-   }
+  function getActiveTodo() {
+    return activeTodo;
+  }
 
-   function updateTodoTitle(id, newTitle){
-      const todo = getTodoByID(id);
-      todo.title = newTitle;
-      saveProjects();
-   }
+  function getTodoByID(id) {
+    const project = getActiveProject();
+    const todo = project.todos.find((el) => el.id === id);
+    if (todo === null) console.log("no todo found");
+    return todo;
+  }
 
-   function updateTodoDesc(id, newDesc){
-      const todo = getTodoByID(id);
-      todo.desc = newDesc;
-      saveProjects();
-   }
+  function updateTodoTitle(id, newTitle) {
+    const todo = getTodoByID(id);
+    todo.title = newTitle;
+    saveProjects();
+  }
 
-   function updateTodoPriLevel(id, newPri){
-      const todo = getTodoByID(id);
-      todo.pri = newPri;
-      saveProjects();
-   }
+  function updateTodoDesc(id, newDesc) {
+    const todo = getTodoByID(id);
+    todo.desc = newDesc;
+    saveProjects();
+  }
 
-   function updateTodoDueDate(id, newDate){
-      const todo = getTodoByID(id);
-      todo.date = newDate;
-      saveProjects();
-   }
+  function updateTodoPriLevel(id, newPri) {
+    const todo = getTodoByID(id);
+    todo.pri = newPri;
+    saveProjects();
+  }
 
-   function saveProjects(){
-      const projectsJSON = JSON.stringify(projects);
-      localStorage.setItem("projects", projectsJSON);
-   }
+  function updateTodoDueDate(id, newDate) {
+    const todo = getTodoByID(id);
+    todo.date = newDate;
+    saveProjects();
+  }
 
-   function loadProjects() {
-      const saved = localStorage.getItem("projects");
-      if(!saved) return;
+  function saveProjects() {
+    const projectsJSON = JSON.stringify(projects);
+    localStorage.setItem("projects", projectsJSON);
+  }
 
-      projects = JSON.parse(saved);
-      activeProject = projects[0] || null;
-      activeTodo = null;
-   }
+  function loadProjects() {
+    const saved = localStorage.getItem("projects");
+    if (!saved) return;
 
-   return {
-      addProject,
-      updateProjectTitle,
-      setActiveProject,
-      getActiveProject,
-      deleteActiveProject,
-      deleteProjectByID,
-      getAllProjects,
+    projects = JSON.parse(saved);
+    activeProject = projects[0] || null;
+    activeTodo = null;
+  }
 
-      addTodo,
-      deleteTodo,
-      markTodoComplete,
-      setActiveTodo,
-      getActiveTodo,
-      updateTodoTitle,
-      updateTodoDesc,
-      updateTodoPriLevel,
-      updateTodoDueDate,
-      showAllTodosOfActiveProject,
-      
-      saveProjects,
-      loadProjects,
-   };
+  return {
+    addProject,
+    updateProjectTitle,
+    setActiveProject,
+    getActiveProject,
+    deleteActiveProject,
+    deleteProjectByID,
+    getAllProjects,
+
+    addTodo,
+    deleteTodo,
+    markTodoComplete,
+    setActiveTodo,
+    getActiveTodo,
+    updateTodoTitle,
+    updateTodoDesc,
+    updateTodoPriLevel,
+    updateTodoDueDate,
+    showAllTodosOfActiveProject,
+
+    saveProjects,
+    loadProjects,
+  };
 }
 
 export default createApp;
